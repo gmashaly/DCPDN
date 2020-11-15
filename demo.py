@@ -181,10 +181,10 @@ netG.cuda()
 target, input, depth, ato = target.cuda(), input.cuda(), depth.cuda(), ato.cuda()
 val_target, val_input, val_depth, val_ato = val_target.cuda(), val_input.cuda(), val_depth.cuda(), val_ato.cuda()
 
-target = Variable(target, volatile=True)
-input = Variable(input,volatile=True)
-depth = Variable(depth,volatile=True)
-ato = Variable(ato,volatile=True)
+target = Variable(target, requires_grad=False)
+input = Variable(input,requires_grad=False)
+depth = Variable(depth,requires_grad=False)
+ato = Variable(ato,requires_grad=False)
 
 label_d = Variable(label_d.cuda())
 
@@ -221,10 +221,11 @@ for epoch in range(1):
     # print(i)
     target_cpu, input_cpu, depth_cpu, ato_cpu = target_cpu.float().cuda(), input_cpu.float().cuda(), depth_cpu.float().cuda(), ato_cpu.float().cuda()
     # get paired data
-    target.data.resize_as_(target_cpu).copy_(target_cpu)
-    input.data.resize_as_(input_cpu).copy_(input_cpu)
-    depth.data.resize_as_(depth_cpu).copy_(depth_cpu)
-    ato.data.resize_as_(ato_cpu).copy_(ato_cpu)
+    with torch.no_grad():
+      target.resize_as_(target_cpu).copy_(target_cpu)
+      input.resize_as_(input_cpu).copy_(input_cpu)
+      depth.resize_as_(depth_cpu).copy_(depth_cpu)
+      ato.resize_as_(ato_cpu).copy_(ato_cpu)
     #
 
 
