@@ -239,10 +239,10 @@ for epoch in range(opt.niter):
 
 
     # get paired data
-    target.data.resize_as_(target_cpu).copy_(target_cpu)
-    input.data.resize_as_(input_cpu).copy_(input_cpu)
-    trans.data.resize_as_(trans_cpu).copy_(trans_cpu)
-    ato.data.resize_as_(ato_cpu).copy_(ato_cpu)
+    target.resize_as_(target_cpu).copy_(target_cpu)
+    input.resize_as_(input_cpu).copy_(input_cpu)
+    trans.resize_as_(trans_cpu).copy_(trans_cpu)
+    ato.resize_as_(ato_cpu).copy_(ato_cpu)
 
     # target_cpu, input_cpu = target_cpu.float().cuda(), input_cpu.float().cuda()
     # # NOTE paired samples
@@ -266,7 +266,7 @@ for epoch in range(opt.niter):
     netD.zero_grad()
 
     # NOTE: compute L_cGAN in eq.(2)
-    label_d.data.resize_((batch_size, 1, sizePatchGAN, sizePatchGAN)).fill_(real_label)
+    label_d.resize_((batch_size, 1, sizePatchGAN, sizePatchGAN)).fill_(real_label)
     output = netD(torch.cat([trans, target], 1)) # conditional
     errD_real = criterionBCE(output, label_d)
     errD_real.backward()
@@ -298,8 +298,8 @@ for epoch in range(opt.niter):
     # compute L_L1 (eq.(4) in the paper
     L_img_ = criterionCAE(x_hat, target)
     L_img = lambdaIMG * L_img_
-    if lambdaIMG <> 0:
-      L_img.backward(retain_variables=True)
+    if lambdaIMG != 0:
+      L_img.backward(retain_graph=True)
 
 
 
@@ -317,7 +317,7 @@ for epoch in range(opt.niter):
 
     if lambdaIMG != 0:
         # L_img.backward(retain_graph=True) # in case of current version of pytorch
-        L_tran.backward(retain_variables=True)
+        L_tran.backward(retain_graph=True)
 
     # NOTE feature loss for transmission map
     features_content = vgg(trans)
@@ -325,7 +325,7 @@ for epoch in range(opt.niter):
 
     features_y = vgg(tran_hat)
     content_loss =  0.8*lambdaIMG* criterionCAE(features_y[1], f_xc_c)
-    content_loss.backward(retain_variables=True)
+    content_loss.backward(retain_graph=True)
 
     # Edge Loss 2
     features_content = vgg(trans)
@@ -333,14 +333,14 @@ for epoch in range(opt.niter):
 
     features_y = vgg(tran_hat)
     content_loss1 =  0.8*lambdaIMG* criterionCAE(features_y[0], f_xc_c)
-    content_loss1.backward(retain_variables=True)
+    content_loss1.backward(retain_graph=True)
 
 
     # NOTE compute L1 for atop-map
     L_ato_ = criterionCAE(atp_hat, ato)
     L_ato =  lambdaIMG * L_ato_
     if lambdaIMG != 0:
-        L_ato_.backward(retain_variables=True)
+        L_ato_.backward(retain_graph=True)
 
 
 
@@ -352,7 +352,7 @@ for epoch in range(opt.niter):
     errG_ = criterionBCE(output, label_d)
     errG = lambdaGAN * errG_
 
-    if lambdaGAN <> 0:
+    if lambdaGAN != 0:
         (errG).backward()
 
 
@@ -362,16 +362,16 @@ for epoch in range(opt.niter):
     if ganIterations % opt.display == 0:
       print('[%d/%d][%d/%d] L_D: %f L_img: %f L_G: %f D(x): %f D(G(z)): %f / %f'
           % (epoch, opt.niter, i, len(dataloader),
-             L_tran_.data[0], L_tran_.data[0], L_img.data[0], L_img.data[0], L_img.data[0], L_img.data[0]))
+             L_tran_.item(), L_tran_.item(), L_img.item(), L_img.item(), L_img.item(), L_img.item()))
       sys.stdout.flush()
       trainLogger.write('%d\t%f\t%f\t%f\t%f\t%f\t%f\n' % \
-                        (i, L_img.data[0], L_img.data[0], L_img.data[0], L_img.data[0], L_img.data[0], L_img.data[0]))
+                        (i, L_img.item(), L_img.item(), L_img.item(), L_img.item(), L_img.item(), L_img.item()))
       trainLogger.flush()
     if ganIterations % opt.evalIter == 0:
       val_batch_output = torch.FloatTensor(val_input.size()).fill_(0)
       for idx in range(val_input.size(0)):
         single_img = val_input[idx,:,:,:].unsqueeze(0)
-        val_inputv = Variable(single_img, volatile=True)
+        val_inputv = Variable(single_img, requires_grad=False)
         x_hat_val, x_hat_val2, x_hat_val3, dehaze21 = netG(val_inputv)
         val_batch_output[idx,:,:,:].copy_(dehaze21.data)
       vutils.save_image(val_batch_output, '%s/generated_epoch_%08d_iter%08d.png' % \
