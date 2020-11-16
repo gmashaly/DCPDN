@@ -120,7 +120,9 @@ netG = net.dehaze(inputChannelSize, outputChannelSize, ngf)
 
 netG.apply(weights_init)
 if opt.netG != '':
-  netG.load_state_dict(torch.load(opt.netG))
+  #netG.load_state_dict(torch.load(opt.netG))
+  model = utils.update_mddel_kwys(torch.load(opt.netG))
+  netG.load_state_dict(model)
 print(netG)
 
 
