@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from PIL import Image
 from torch.autograd import Variable
-from torch.utils.serialization import load_lua
+
 
 from myutils.vgg16 import Vgg16
 
@@ -82,6 +82,7 @@ def preprocess_batch(batch):
 
 
 def init_vgg16(model_folder):
+	from torch.utils.serialization import load_lua
 	"""load the vgg16 model feature"""
 	if not os.path.exists(os.path.join(model_folder, 'vgg16.weight')):
 		if not os.path.exists(os.path.join(model_folder, 'vgg16.t7')):
