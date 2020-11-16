@@ -92,3 +92,28 @@ def init_vgg16(model_folder):
 		for (src, dst) in zip(vgglua.parameters()[0], vgg.parameters()):
 			dst.data[:] = src
 		torch.save(vgg.state_dict(), os.path.join(model_folder, 'vgg16.weight'))
+
+
+
+def update_mddel_kwys(state_dict):
+	import re
+	from collections import OrderedDict
+
+	new_state_dict = OrderedDict()
+	for k, v in state_dict.items():
+		dot_key = re.findall(r"_est.layer\d.layer\d.conv.", k) or re.findall(r"_est.[d]*layer[final]*\d.[d]*layer\d.bn.",k) or re.findall(r"_est.dlayer\d.dlayer\d.tconv.", k)
+		dot_key = dot_key or re.findall(r"_est.[d]*layer[final]*.[d]*layer\d.conv.", k)
+		dot_key = dot_key or re.findall(r"tran_dense.dense_block\d.denselayer\d{1,2}.norm.", k)
+		name = k
+		if dot_key:
+			name = k.replace('.conv.', '_conv.')
+			name = name.replace('.bn.', '_bn.')
+			name = name.replace('.tconv.', '_tconv.')
+			name = name.replace('.norm.', '.norm')
+		dot_key = re.findall(r"tran_dense.dense_block\d.denselayer\d{1,2}.conv.", k)
+		if dot_key:
+			name = name.replace('.conv.', '.conv')
+
+		new_state_dict[name] = v
+
+	return new_state_dict

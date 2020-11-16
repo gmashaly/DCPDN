@@ -131,7 +131,9 @@ netG = net.dehaze(inputChannelSize, outputChannelSize, ngf)
 
 
 if opt.netG != '':
-  netG.load_state_dict(torch.load(opt.netG))
+  from myutils import utils
+  model = utils.update_mddel_kwys(torch.load(opt.netG))
+  netG.load_state_dict(model)
 print(netG)
 
 
@@ -246,3 +248,4 @@ for epoch in range(1):
 
         vutils.save_image(zz1, './result_cvpr18/image/real_dehazed/'+imgname[index2]+'_DCPCN.png', normalize=True, scale_each=False)
 trainLogger.close()
+
