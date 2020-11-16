@@ -119,7 +119,7 @@ class D(nn.Module):
     # 256
     layer_idx = 1
     name = 'layer%d' % layer_idx
-    main.add_module('%s.conv' % name, nn.Conv2d(nc, nf, 4, 2, 1, bias=False))
+    main.add_module('%s_conv' % name, nn.Conv2d(nc, nf, 4, 2, 1, bias=False))
 
     # 128
     layer_idx += 1
@@ -136,17 +136,17 @@ class D(nn.Module):
     layer_idx += 1
     name = 'layer%d' % layer_idx
     nf = nf * 2
-    main.add_module('%s.leakyrelu' % name, nn.LeakyReLU(0.2, inplace=True))
-    main.add_module('%s.conv' % name, nn.Conv2d(nf, nf*2, 4, 1, 1, bias=False))
-    main.add_module('%s.bn' % name, nn.BatchNorm2d(nf*2))
+    main.add_module('%s_leakyrelu' % name, nn.LeakyReLU(0.2, inplace=True))
+    main.add_module('%s_conv' % name, nn.Conv2d(nf, nf*2, 4, 1, 1, bias=False))
+    main.add_module('%s_bn' % name, nn.BatchNorm2d(nf*2))
 
     # 31
     layer_idx += 1
     name = 'layer%d' % layer_idx
     nf = nf * 2
-    main.add_module('%s.leakyrelu' % name, nn.LeakyReLU(0.2, inplace=True))
-    main.add_module('%s.conv' % name, nn.Conv2d(nf, 1, 4, 1, 1, bias=False))
-    main.add_module('%s.sigmoid' % name , nn.Sigmoid())
+    main.add_module('%s_leakyrelu' % name, nn.LeakyReLU(0.2, inplace=True))
+    main.add_module('%s_conv' % name, nn.Conv2d(nf, 1, 4, 1, 1, bias=False))
+    main.add_module('%s_sigmoid' % name , nn.Sigmoid())
     # 30 (sizePatchGAN=30)
 
     self.main = main
@@ -164,7 +164,7 @@ class D_tran(nn.Module):
     # 256
     layer_idx = 1
     name = 'layer%d' % layer_idx
-    main.add_module('%s.conv' % name, nn.Conv2d(nc, nf, 4, 2, 1, bias=False))
+    main.add_module('%s_conv' % name, nn.Conv2d(nc, nf, 4, 2, 1, bias=False))
 
     # 128
     layer_idx += 1
@@ -181,17 +181,17 @@ class D_tran(nn.Module):
     layer_idx += 1
     name = 'layer%d' % layer_idx
     nf = nf * 2
-    main.add_module('%s.leakyrelu' % name, nn.LeakyReLU(0.2, inplace=True))
-    main.add_module('%s.conv' % name, nn.Conv2d(nf, nf*2, 4, 1, 1, bias=False))
-    main.add_module('%s.bn' % name, nn.BatchNorm2d(nf*2))
+    main.add_module('%s_leakyrelu' % name, nn.LeakyReLU(0.2, inplace=True))
+    main.add_module('%s_conv' % name, nn.Conv2d(nf, nf*2, 4, 1, 1, bias=False))
+    main.add_module('%s_bn' % name, nn.BatchNorm2d(nf*2))
 
     # 31
     layer_idx += 1
     name = 'layer%d' % layer_idx
     nf = nf * 2
-    main.add_module('%s.leakyrelu' % name, nn.LeakyReLU(0.2, inplace=True))
-    main.add_module('%s.conv' % name, nn.Conv2d(nf, 1, 4, 1, 1, bias=False))
-    main.add_module('%s.sigmoid' % name , nn.Sigmoid())
+    main.add_module('%s_leakyrelu' % name, nn.LeakyReLU(0.2, inplace=True))
+    main.add_module('%s_conv' % name, nn.Conv2d(nf, 1, 4, 1, 1, bias=False))
+    main.add_module('%s_sigmoid' % name , nn.Sigmoid())
     # 30 (sizePatchGAN=30)
 
     self.main = main
