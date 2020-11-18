@@ -375,7 +375,7 @@ for epoch in range(opt.niter):
         single_img = val_input[idx,:,:,:].unsqueeze(0)
         val_inputv = Variable(single_img, requires_grad=False)
         x_hat_val, x_hat_val2, x_hat_val3, dehaze21 = netG(val_inputv)
-        val_batch_output[idx,:,:,:].copy_(dehaze21.data)
+        val_batch_output[idx,:,:,:].unsqueeze(0).copy_(dehaze21.data)
       vutils.save_image(val_batch_output, '%s/generated_epoch_%08d_iter%08d.png' % \
         (opt.exp, epoch, ganIterations), normalize=False, scale_each=False)
 
